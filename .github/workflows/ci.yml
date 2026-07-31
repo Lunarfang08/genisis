@@ -1,0 +1,74 @@
+name: Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run format:check --workspace @genesis/web
+      - run: npm run lint:web
+      - run: npm run typecheck:web
+      - run: npm run test:web
+      - run: npm audit --omit=dev --audit-level=high
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy src tests
+      - run: uv run pytest
+      - run: uv run alembic heads
+      - run: uvx pip-audit
+
+  simulation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/simulation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff format --check .
+      - run: uv run ruff check .
+      - run: uv run mypy src tests
+      - run: uv run pytest
+      - run: uvx pip-audit
+
+  containers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config --quiet
+      - run: docker compose -f docker-compose.production.yml config --quiet
+      - uses: aquasecurity/trivy-action@0.32.0
+        with:
+          scan-type: fs
+          severity: CRITICAL,HIGH
+          exit-code: "1"

@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "genesis-simulation"
+version = "0.14.0"
+description = "Deterministic simulation engine for GENESIS"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "mypy==1.17.0",
+  "pytest==8.4.1",
+  "ruff==0.12.4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/genesis_simulation"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/genesis_simulation/py.typed" = "genesis_simulation/py.typed"
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-config --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["src", "tests"]

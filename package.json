@@ -1,0 +1,22 @@
+{
+  "name": "genesis",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/shared-types"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @genesis/web",
+    "build:web": "npm run build --workspace @genesis/web",
+    "lint:web": "npm run lint --workspace @genesis/web",
+    "test:web": "npm run test --workspace @genesis/web",
+    "typecheck:web": "npm run typecheck --workspace @genesis/web",
+    "format:web": "npm run format --workspace @genesis/web",
+    "check:web": "npm run format:check --workspace @genesis/web && npm run lint:web && npm run typecheck:web && npm run test:web"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
+

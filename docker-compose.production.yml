@@ -1,0 +1,95 @@
+name: genesis-production-example
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: genesis
+      POSTGRES_USER: genesis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U genesis -d genesis"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    build: {context: ., dockerfile: infrastructure/docker/api.Dockerfile}
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      GENESIS_ENVIRONMENT: production
+      GENESIS_DATABASE_URL: postgresql+asyncpg://genesis:${POSTGRES_PASSWORD}@postgres:5432/genesis
+      GENESIS_AUTH_SECRET_KEY: ${GENESIS_AUTH_SECRET_KEY:?set GENESIS_AUTH_SECRET_KEY}
+      GENESIS_COOKIE_SECURE: "true"
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: "no"
+
+  api:
+    build: {context: ., dockerfile: infrastructure/docker/api.Dockerfile}
+    environment: &api-env
+      GENESIS_ENVIRONMENT: production
+      GENESIS_DATABASE_URL: postgresql+asyncpg://genesis:${POSTGRES_PASSWORD}@postgres:5432/genesis
+      GENESIS_REDIS_URL: redis://redis:6379/0
+      GENESIS_AUTH_SECRET_KEY: ${GENESIS_AUTH_SECRET_KEY:?set GENESIS_AUTH_SECRET_KEY}
+      GENESIS_COOKIE_SECURE: "true"
+      GENESIS_CORS_ORIGINS: '["https://${GENESIS_HOST:?set GENESIS_HOST}"]'
+      GENESIS_TRUSTED_HOSTS: '["${GENESIS_HOST}","api"]'
+      GENESIS_AI_ENABLED: ${GENESIS_AI_ENABLED:-false}
+      GENESIS_AI_PROVIDER: ${GENESIS_AI_PROVIDER:-mock}
+      GENESIS_AI_MODEL: ${GENESIS_AI_MODEL:-llama-3.3-70b-versatile}
+      GENESIS_AI_DAILY_CALL_BUDGET: ${GENESIS_AI_DAILY_CALL_BUDGET:-5}
+      GENESIS_AI_TIMEOUT_SECONDS: ${GENESIS_AI_TIMEOUT_SECONDS:-15}
+      GENESIS_GROQ_API_KEY: ${GENESIS_GROQ_API_KEY:-}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/live')"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  worker:
+    build: {context: ., dockerfile: infrastructure/docker/api.Dockerfile}
+    command: ["genesis-worker"]
+    environment: *api-env
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    restart: unless-stopped
+
+  web:
+    build: {context: ., dockerfile: infrastructure/docker/web.Dockerfile}
+    environment:
+      GENESIS_INTERNAL_API_URL: http://api:8000/api/v1
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+
+  proxy:
+    image: nginx:1.29-alpine
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./infrastructure/nginx/genesis.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certificates:/etc/nginx/certs:ro
+    depends_on: [web, api]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

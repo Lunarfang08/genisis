@@ -1,0 +1,39 @@
+Terminal 1 — Backend
+cd "C:\Users\CVA RAWALPINDI\Desktop\genisis\apps\api"
+
+$env:GENESIS_DATABASE_URL="postgresql+asyncpg://genesis:genesis@localhost:5432/genesis"
+$env:GENESIS_REDIS_URL="redis://localhost:6379/0"
+
+..\..\.tools\uv\uv.exe run uvicorn genesis_api.main:app --reload --host 127.0.0.1 --port 8000
+Open:
+API: http://localhost:8000
+Documentation: http://localhost:8000/docs
+Liveness: http://localhost:8000/api/v1/health/live
+The backend will start without PostgreSQL or Redis, but readiness will show degraded until those services are installed locally.
+Terminal 2 — Frontend
+cd "C:\Users\CVA RAWALPINDI\Desktop\genisis"
+
+$env:GENESIS_INTERNAL_API_URL="http://127.0.0.1:8000/api/v1"
+$env:NEXT_PUBLIC_API_URL="http://127.0.0.1:8000/api/v1"
+
+npm run dev:web
+
+
+cd "C:\Users\CVA RAWALPINDI\Desktop\genisis"
+
+$env:REDIS_URL="redis://127.0.0.1:6379"
+
+..\..\.tools\uv\uv.exe run uvicorn genesis_api.main:app --reload --host 127.0.0.1 --port 8000
+ & $redisServer.FullName
+
+
+ cd "C:\Users\CVA RAWALPINDI\Desktop\genisis\apps\api"
+
+$env:GENESIS_DATABASE_URL="postgresql+asyncpg://genesis:genesis@localhost:5432/genesis"
+$env:GENESIS_REDIS_URL="redis://localhost:6379/0"
+$env:GENESIS_AUTH_SECRET_KEY="b0b4d8d5d4b8f6f2c5f0a1d7e6c39b7f9a2d4c6e8f1b3a5d7c9e2f4a6b8d0c1e3f5a7c9d1e4f6b8a0c2d4e6f8a1b3"
+
+..\..\.tools\uv\uv.exe run alembic upgrade head
+..\..\.tools\uv\uv.exe run uvicorn genesis_api.main:app --reload
+
+& "C:\Users\CVA RAWALPINDI\AppData\Local\Microsoft\WinGet\Packages\taizod1024.redis-windows-fork_Microsoft.Winget.Source_8wekyb3d8bbwe\Redis-8.8.0-Windows-x64-msys2\redis-server.exe"
