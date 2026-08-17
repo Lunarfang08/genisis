@@ -60,7 +60,7 @@ test("every public detail page renders a working overview link", async () => {
     assert.equal(response.status, 200, `${route} should render`);
 
     const html = await response.text();
-    assert.match(html, /class="detail-back"[^>]*href="\/"/);
+    assert.match(html, /<a[^>]*href="\/"[^>]*class="detail-back"/);
     assert.match(html, /Overview|overview/);
   }
 });

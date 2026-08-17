@@ -14,6 +14,11 @@ dist/
 build/
 *.egg-info/
 
+# The Sites Vite plugin is source code required by apps/web/vite.config.ts.
+!apps/web/build/
+apps/web/build/*
+!apps/web/build/sites-vite-plugin.ts
+
 # Node
 node_modules/
 .next/
