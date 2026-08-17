@@ -121,7 +121,11 @@ export default async function Home() {
           <div className="story-links">
             <Link href="/architecture">Inspect the system design →</Link>
             <Link href="/performance">Read verified scale limits →</Link>
-            <a href="https://github.com/" rel="noreferrer">
+            <a
+              href="https://github.com/Lunarfang08/genisis"
+              rel="noreferrer"
+              target="_blank"
+            >
               GitHub repository →
             </a>
           </div>

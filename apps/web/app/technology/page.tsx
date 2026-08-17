@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 export default function TechnologyPage() {
   return (
     <main className="content-page">

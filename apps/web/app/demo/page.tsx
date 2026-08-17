@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { DemoWorld } from "@/app/_components/DemoWorld";
 
 export default function DemoPage() {

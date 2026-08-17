@@ -2528,3 +2528,158 @@ footer {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Readability pass: keep the technical density while removing micro-text. */
+body {
+  font-size: 16px;
+}
+
+.auth-intro p,
+.workspace-heading p,
+.world-awaiting p,
+.landing-hero p,
+.content-page > p,
+.landing-proof p,
+.engineering-story p,
+.recruiter-summary p,
+.content-page p,
+.command-header p,
+.toast p,
+.registry-empty p,
+.ai-panel p,
+.timeline-empty p,
+.analytics-empty,
+.map-empty,
+.empty-stream p,
+.systems-heading p {
+  font-size: 15px;
+}
+
+.landing-nav nav a,
+.story-links a,
+.nav-item,
+.button-primary,
+.button-secondary,
+.control-buttons button,
+.world-toolbar button,
+.map-readout a,
+.export-actions a {
+  font-size: 13px;
+}
+
+.brand small,
+.context-label,
+.signal,
+.auth-card label,
+.world-create-card label,
+.advanced-world-settings summary,
+.capacity-estimate span,
+.capacity-estimate small,
+.observer-readout span,
+.workspace-count,
+.registry-heading,
+.world-row > span,
+.world-row small,
+.world-row time,
+.world-detail-grid span,
+.world-detail-grid strong,
+.simulation-controls strong,
+.control-buttons label,
+.observatory-panel > header > strong,
+.timeline-panel > header > strong,
+.observatory-stats span,
+.score-readout span,
+.risk-map > span,
+.timeline-panel time,
+.timeline-panel li span,
+.timeline-panel li b,
+.relationship-graph a,
+.relationship-graph span,
+.relationship-graph p,
+.memory-list time,
+.memory-list span,
+.goal-list span,
+.goal-list b,
+.dashboard-kpis span,
+.map-readout span,
+.analytics-card > span,
+.analytics-card > small,
+.map-controls output,
+.city-node span,
+.export-actions,
+.hero-runtime > span,
+.hero-runtime dt,
+.hero-runtime dd,
+.landing-proof article > span,
+.architecture-flow b,
+.architecture-flow i,
+.demo-controls label,
+.demo-date span,
+.demo-date small,
+.demo-disclosure,
+.profile-button > span:first-child,
+.profile-button small,
+.sidebar-heading,
+.eyebrow,
+.nav-item > span,
+.sidebar-readout > span,
+.sidebar-readout small,
+.sidebar-readout strong,
+.metric-card > span,
+.metric-card > small,
+.metric-index,
+.coordinates,
+.stream-state,
+.world-sphere span,
+.world-callout span,
+.world-callout strong,
+.axis-label,
+.world-toolbar,
+.stream-footer span,
+.stream-footer strong,
+.system-row span,
+.system-row strong,
+.system-row small,
+footer {
+  font-size: 12px;
+}
+
+.detail-back {
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  min-height: 44px;
+  padding: 0 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.detail-back:hover {
+  background: var(--acid-soft);
+  border-color: var(--acid);
+}
+
+@media (max-width: 900px) {
+  .landing-nav {
+    gap: 14px;
+    grid-template-columns: 1fr auto;
+    padding-block: 12px;
+  }
+
+  .landing-nav nav {
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    overflow-x: auto;
+    padding: 4px 0;
+  }
+
+  .landing-nav nav a {
+    min-height: 36px;
+    padding: 9px 0;
+    white-space: nowrap;
+  }
+}

@@ -45,3 +45,22 @@ test("renders a transparent no-login deterministic demo", async () => {
   assert.match(html, /transparent seeded formula/);
   assert.match(html, /makes no API or paid AI calls/);
 });
+
+test("every public detail page renders a working overview link", async () => {
+  const routes = [
+    "/architecture",
+    "/technology",
+    "/performance",
+    "/ai-transparency",
+    "/demo",
+  ];
+
+  for (const route of routes) {
+    const response = await render(route);
+    assert.equal(response.status, 200, `${route} should render`);
+
+    const html = await response.text();
+    assert.match(html, /class="detail-back"[^>]*href="\/"/);
+    assert.match(html, /Overview|overview/);
+  }
+});
